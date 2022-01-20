@@ -38,6 +38,20 @@ public class Simulation {
         this.board = newBoard;
     }
 
+    public void setState(int y, int x, int drawMode) {
+        if (x >= width || x < 0) {
+            return;
+        }
+        if (y >= height || y < 0) {
+            return;
+        }
+        if (drawMode == 1) {
+            setAlive(y,x);
+        } else {
+            setDead(y,x);
+        }
+    }
+
     void setAlive(int y, int x) {
         this.board[y][x] = 1;
     }
@@ -89,24 +103,6 @@ public class Simulation {
         System.out.println();
     }
 
-    public static void main(String[] args) {
-        Simulation simulation = new Simulation(4, 4);
-        simulation.setAlive(1,1);
-        simulation.setAlive(1,2);
-        simulation.setAlive(1,3);
-
-        simulation.printBoard();
-        simulation.step();
-
-        simulation.printBoard();
-        simulation.step();
-
-        simulation.printBoard();
-        simulation.step();
-
-        simulation.printBoard();
-        simulation.step();
-    }
 
     public int getWidth() {
         return width;
