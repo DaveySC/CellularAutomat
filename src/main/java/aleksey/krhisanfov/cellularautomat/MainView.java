@@ -16,42 +16,31 @@ import javafx.scene.transform.NonInvertibleTransformException;
 public class MainView extends VBox {
 
     private Canvas canvas;
-    private Button stepButton;
     private Affine affine;
 
-    private Simulation simulation;
+    Simulation simulation;
 
     private int drawMode = 1;
 
     public MainView() {
-        this.stepButton = new Button("step");
         this.canvas = new Canvas(400, 400);
         this.affine = new Affine();
         affine.appendScale(400 / 10f, 400 / 10f);
 
         this.simulation = new Simulation(10, 10);
-        this.getChildren().addAll(stepButton, canvas);
+
+        ToolBar toolBar = new ToolBar(this);
+        this.getChildren().addAll(toolBar, canvas);
 
         this.canvas.setOnMousePressed(this::handleDraw);
         this.canvas.setOnMouseDragged(this::handleDraw);
-        this.setOnKeyPressed(this::keyPressed);
 
 
-        stepButton.setOnAction(actionEvent -> {
-            this.simulation.step();
-            this.draw();
-        });
     }
 
-    private void keyPressed(KeyEvent keyEvent) {
-
-        if (keyEvent.getCode() == KeyCode.D) {
-            this.drawMode = 1;
-        } else if (keyEvent.getCode() == KeyCode.E) {
-            this.drawMode = 0;
-        }
+    public void setDrawMode(int drawMode) {
+        this.drawMode = drawMode;
     }
-
 
     private void handleDraw(MouseEvent mouseEvent) {
         double mouseX = mouseEvent.getX();
@@ -72,9 +61,7 @@ public class MainView extends VBox {
             System.out.println("couldn't reverse transform");
         }
 
-
     }
-
 
     public void draw() {
         GraphicsContext graphicsContext = this.canvas.getGraphicsContext2D();
@@ -102,7 +89,5 @@ public class MainView extends VBox {
             graphicsContext.strokeLine(x,0, x, 10);
         }
     }
-
-
 
 }
