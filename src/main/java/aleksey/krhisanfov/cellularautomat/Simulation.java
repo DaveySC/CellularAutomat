@@ -5,6 +5,8 @@ public class Simulation {
     private int height;
     private int[][] board;
 
+
+
     public Simulation(int width, int height) {
         this.width = width;
         this.height = height;
@@ -87,22 +89,6 @@ public class Simulation {
 
     }
 
-    void printBoard() {
-        for (int y = 0; y < height; y++) {
-            String line = "|";
-            for (int x = 0; x < width; x++) {
-                if (this.board[y][x] == 1) {
-                    line += "1";
-                } else {
-                    line += "0";
-                }
-            }
-            line += "|";
-            System.out.println(line);
-        }
-        System.out.println();
-    }
-
 
     public int getWidth() {
         return width;
@@ -110,5 +96,16 @@ public class Simulation {
 
     public int getHeight() {
         return height;
+    }
+
+
+    public void clearBoard() {
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                if (this.board[y][x] == 1) {
+                    this.board[y][x] = 0;
+                }
+            }
+        }
     }
 }
