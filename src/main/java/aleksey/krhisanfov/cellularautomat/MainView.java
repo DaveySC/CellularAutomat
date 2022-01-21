@@ -1,6 +1,7 @@
 package aleksey.krhisanfov.cellularautomat;
 
 import javafx.animation.AnimationTimer;
+import javafx.beans.Observable;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -33,27 +34,39 @@ public class MainView extends VBox {
 
     public MainView() {
         this.canvas = new Canvas(400, 400);
-
+        this.canvas.setStyle("-fx-background-color:red;");
         this.affine = new Affine();
         affine.appendScale(400 / (double)width, 400 / (double)height);
         this.simulation = new Simulation(width, height);
 
         ToolBar toolBar = new ToolBar(this);
-        this.infoBar = new InfoBar();
-
         Pane spacer = new Pane();
         spacer.setMinSize(0,0);
         spacer.setMaxSize(Double.MAX_VALUE,Double.MAX_VALUE);
         VBox.setVgrow(spacer, Priority.ALWAYS);
 
 
-        this.getChildren().addAll(toolBar, canvas, spacer, infoBar);
+        this.getChildren().addAll(toolBar, canvas);
 
         this.canvas.setOnMousePressed(this::handleDraw);
         this.canvas.setOnMouseDragged(this::handleDraw);
-        this.canvas.setOnMouseMoved(this::mouseEnteredNewSquare);
+        //this.canvas.setOnMouseMoved(this::mouseEnteredNewSquare);
         this.setMaxHeight(Double.MAX_VALUE);
         this.setMaxWidth(Double.MAX_VALUE);
+        this.heightProperty().addListener(this::resizeCanvas);
+        this.widthProperty().addListener(this::resizeCanvas);
+
+    }
+
+    private void resizeCanvas(Observable observable) {
+        double widthHBox = this.getWidth();
+        double heightHBox = this.getHeight() * 0.928;
+
+        this.canvas.setWidth(widthHBox);
+        this.canvas.setHeight(heightHBox);
+        this.affine = new Affine();
+        affine.appendScale(this.canvas.getWidth() / (double)this.width, this.canvas.getHeight() / (double)this.height);
+        draw();
 
     }
 
@@ -78,14 +91,12 @@ public class MainView extends VBox {
         this.height = height;
         this.simulation.setSizeOfBoard(width, height);
         this.affine = new Affine();
-        this.affine.appendScale(400 / (double)width, 400 / (double)height);
+        this.affine.appendScale(this.canvas.getWidth() / (double)width, this.canvas.getHeight() / (double)height);
         draw();
     }
 
     public void setDrawMode(int drawMode) {
         this.drawMode = drawMode;
-        this.infoBar.updateMode(drawMode);
-
     }
 
     private void handleDraw(MouseEvent mouseEvent) {
@@ -114,7 +125,7 @@ public class MainView extends VBox {
         graphicsContext.setTransform(this.affine);
 
         graphicsContext.setFill(Color.LIGHTGRAY);
-        graphicsContext.fillRect(0, 0, 350, 350);
+        graphicsContext.fillRect(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
 
 
         graphicsContext.setFill(Color.BLACK);
