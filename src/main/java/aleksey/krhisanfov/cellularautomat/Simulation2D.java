@@ -1,19 +1,18 @@
 package aleksey.krhisanfov.cellularautomat;
 
-public class Simulation {
+public class Simulation2D {
     private int width;
     private int height;
     private int[][] board;
 
 
-
-    public Simulation(int width, int height) {
+    public Simulation2D(int width, int height) {
         this.width = width;
         this.height = height;
         board = new int[height][width];
     }
 
-     void setSizeOfBoard(int width, int height) {
+    void setSizeOfBoard(int width, int height) {
         this.width = width;
         this.height = height;
         board = new int[height][width];

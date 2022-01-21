@@ -39,7 +39,7 @@ public class ToolBar extends javafx.scene.control.ToolBar {
     }
 
     private void step(ActionEvent actionEvent) {
-        this.mainView.simulation.step();
+        this.mainView.simulation2D.step();
         this.mainView.draw();
         stop(null);
     }
@@ -55,7 +55,7 @@ public class ToolBar extends javafx.scene.control.ToolBar {
     }
 
     private void clear(ActionEvent actionEvent) {
-        this.mainView.simulation.clearBoard();
+        this.mainView.simulation2D.clearBoard();
         this.mainView.draw();
         stop(null);
     }

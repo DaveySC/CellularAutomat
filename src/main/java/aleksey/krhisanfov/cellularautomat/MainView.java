@@ -5,20 +5,12 @@ import javafx.beans.Observable;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
 import javafx.scene.transform.Affine;
-import javafx.scene.transform.NonInvertibleTransformException;
-import javafx.stage.Stage;
 
 public class MainView extends VBox {
 
@@ -28,7 +20,7 @@ public class MainView extends VBox {
     private int width = 10;
     private int height = 10;
 
-    Simulation simulation;
+    Simulation2D simulation2D;
 
     private int drawMode = 1;
 
@@ -37,7 +29,7 @@ public class MainView extends VBox {
         this.canvas.setStyle("-fx-background-color:red;");
         this.affine = new Affine();
         affine.appendScale(400 / (double)width, 400 / (double)height);
-        this.simulation = new Simulation(width, height);
+        this.simulation2D = new Simulation2D(width, height);
 
         ToolBar toolBar = new ToolBar(this);
         Pane spacer = new Pane();
@@ -89,7 +81,7 @@ public class MainView extends VBox {
     public void setSizeOfBoard(int width, int height) {
         this.width = width;
         this.height = height;
-        this.simulation.setSizeOfBoard(width, height);
+        this.simulation2D.setSizeOfBoard(width, height);
         this.affine = new Affine();
         this.affine.appendScale(this.canvas.getWidth() / (double)width, this.canvas.getHeight() / (double)height);
         draw();
@@ -110,7 +102,7 @@ public class MainView extends VBox {
 
             System.out.println(simX + " " + simY);
 
-            this.simulation.setState(simY, simX, drawMode);
+            this.simulation2D.setState(simY, simX, drawMode);
 
             draw();
 
@@ -130,19 +122,20 @@ public class MainView extends VBox {
 
         graphicsContext.setFill(Color.BLACK);
 
-        for (int y = 0; y < this.simulation.getHeight(); y++) {
-            for (int x = 0; x < this.simulation.getWidth(); x++) {
-                if (this.simulation.getState(y,x) == 1) {
+        for (int y = 0; y < this.simulation2D.getHeight(); y++) {
+            for (int x = 0; x < this.simulation2D.getWidth(); x++) {
+                if (this.simulation2D.getState(y,x) == 1) {
                     graphicsContext.fillRect(x,y,1,1);
                 }
             }
         }
         graphicsContext.setStroke(Color.GREY);
         graphicsContext.setLineWidth(0.05);
-        for (int y = 0; y <= this.simulation.getHeight(); y++) {
+        int tester = this.simulation2D.getHeight();
+        for (int y = 0; y <= this.simulation2D.getHeight(); y++) {
             graphicsContext.strokeLine(0, y, width, y);
         }
-        for (int x = 0; x <= this.simulation.getWidth(); x++) {
+        for (int x = 0; x <= this.simulation2D.getWidth(); x++) {
             graphicsContext.strokeLine(x,0, x, height);
         }
     }
@@ -150,7 +143,7 @@ public class MainView extends VBox {
     AnimationTimer animationTimer = new AnimationTimer() {
         @Override
         public void handle(long l) {
-            simulation.step();
+            simulation2D.step();
             draw();
         }
     };
