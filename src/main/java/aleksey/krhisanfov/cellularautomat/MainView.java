@@ -20,9 +20,8 @@ import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.stage.Stage;
 
 public class MainView extends VBox {
-
     private InfoBar infoBar;
-    private Canvas canvas;
+    private ResizableCanvas canvas;
     private Affine affine;
     private int width = 10;
     private int height = 10;
@@ -32,7 +31,8 @@ public class MainView extends VBox {
     private int drawMode = 1;
 
     public MainView() {
-        this.canvas = new Canvas(400, 400);
+        this.canvas = new ResizableCanvas(400, 400);
+        canvas.widthProperty().bind(this.widthProperty());
 
         this.affine = new Affine();
         affine.appendScale(400 / (double)width, 400 / (double)height);
@@ -45,7 +45,7 @@ public class MainView extends VBox {
         spacer.setMinSize(0,0);
         spacer.setMaxSize(Double.MAX_VALUE,Double.MAX_VALUE);
         VBox.setVgrow(spacer, Priority.ALWAYS);
-
+        VBox.setVgrow(this.canvas, Priority.ALWAYS);
 
         this.getChildren().addAll(toolBar, canvas, spacer, infoBar);
 
