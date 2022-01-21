@@ -2,6 +2,8 @@ package aleksey.krhisanfov.cellularautomat;
 
 import javafx.scene.input.Clipboard;
 
+
+//при пустой доске на нажатие степ баг
 public class Simulation1D {
     int[] ruleInterpretation;
     int[][] board;
@@ -22,14 +24,15 @@ public class Simulation1D {
         this.width = width;
         this.height = height;
         this.board = new int[height][width];
+        currentLine = 1;
     }
 
 
-    void setAlive(int x, int y) {
+    void setAlive(int y, int x) {
         board[y][x] = 1;
     }
 
-    String getState(int x, int y) {
+    String getState(int y, int x) {
         String state = "";
         if (x >= width) {
             x = 0;
@@ -40,7 +43,11 @@ public class Simulation1D {
         return String.valueOf(board[y][x]);
     }
 
-    void setRule(int rule) {
+    int isAlive(int y, int x) {
+        return this.board[y][x];
+    }
+
+    public void setRule(int rule) {
         if (rule == 0) {
             ruleInterpretation[0] = 1;
             return;
@@ -57,11 +64,14 @@ public class Simulation1D {
     }
 
 
-    String countNeighbors(int x, int y) {
+    String countNeighbors(int y, int x) {
+        if (y == 0 ) {
+            y = height;
+        }
         String counter = "";
-        counter += getState(x - 1,y - 1);
-        counter += getState(x,y - 1);
-        counter += getState(x + 1,y - 1);
+        counter += getState(y - 1,x - 1);
+        counter += getState(y - 1,x);
+        counter += getState(y - 1,x + 1);
         return counter;
     }
 
@@ -81,7 +91,7 @@ public class Simulation1D {
             if (currentLine >= height) {
                 currentLine = 0;
             }
-            String neighborsCode = countNeighbors(x, currentLine);
+            String neighborsCode = countNeighbors(currentLine, x);
 
             if (ruleInterpretation[convertBinaryStringToInt(neighborsCode)] == 1) {
                 board[currentLine][x] = 1;
@@ -126,5 +136,41 @@ public class Simulation1D {
         }
     }
 
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+
+    public void clearBoard() {
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                if (this.board[y][x] == 1) {
+                    this.board[y][x] = 0;
+                }
+            }
+        }
+    }
+
+    public void setState(int y, int x, int drawMode) {
+        if (x >= width || x < 0) {
+            return;
+        }
+        if (y >= height || y < 0) {
+            return;
+        }
+        if (drawMode == 1) {
+            setAlive(y,x);
+        } else {
+            setDead(y,x);
+        }
+    }
+
+    void setDead(int y, int x) {
+        this.board[y][x] = 0;
+    }
 
 }
