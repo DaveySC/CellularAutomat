@@ -1,6 +1,7 @@
 package aleksey.krhisanfov.cellularautomat;
 
 import javafx.event.ActionEvent;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 
 public class ToolBar extends javafx.scene.control.ToolBar {
@@ -14,6 +15,8 @@ public class ToolBar extends javafx.scene.control.ToolBar {
         Button erase = new Button("erase");
         Button clear = new Button("clear");
         Button size = new Button("size");
+        Button choose = new Button("type of simulation");
+        Button rule = new Button("set rule");
 
 
         start.setOnAction(this::start);
@@ -23,10 +26,23 @@ public class ToolBar extends javafx.scene.control.ToolBar {
         erase.setOnAction(this::erase);
         clear.setOnAction(this::clear);
         size.setOnAction(this::size);
+        choose.setOnAction(this::choose);
+        rule.setOnAction(this::set);
 
-        this.getItems().addAll(start, stop, step, draw, erase, clear, size);
+        this.getItems().addAll(start, stop, step, draw, erase, clear, size, choose, rule);
     }
 
+    private void set(ActionEvent actionEvent) {
+        if (this.mainView.get1D() == null) {
+            Alert alert =new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText(null);
+            alert.setContentText("Выберите другой режим симуляции");
+            alert.showAndWait();
+            return;
+        }
+        RuleView ruleView = new RuleView();
+        ruleView.openRuleWindow(this.mainView);
+    }
 
 
     private void start(ActionEvent actionEvent) {
@@ -37,9 +53,22 @@ public class ToolBar extends javafx.scene.control.ToolBar {
     private void stop(ActionEvent actionEvent) {
         this.mainView.stopSimulation();
     }
-
+//
     private void step(ActionEvent actionEvent) {
-        this.mainView.simulation1D.step();
+        SimulationType simulationType = this.mainView.getSimulationType();
+
+        if (simulationType == SimulationType.D1) {
+            this.mainView.simulation1D.step();
+        }
+
+        if (simulationType == SimulationType.D2) {
+            this.mainView.simulation2D.step();
+        }
+
+        if (simulationType == SimulationType.COLORED) {
+            //this.mainView.coloredSimulation.step();
+        }
+
         this.mainView.draw();
         stop(null);
     }
@@ -53,9 +82,22 @@ public class ToolBar extends javafx.scene.control.ToolBar {
         this.mainView.setDrawMode(0);
         stop(null);
     }
-
+//
     private void clear(ActionEvent actionEvent) {
-        this.mainView.simulation1D.clearBoard();
+
+        SimulationType simulationType = this.mainView.getSimulationType();
+
+        if (simulationType == SimulationType.D1) {
+            this.mainView.simulation1D.clearBoard();
+            this.mainView.simulation1D.setCurrentLine(1);
+        }
+
+        if (simulationType == SimulationType.D2) {
+            this.mainView.simulation2D.clearBoard();
+        }
+
+
+
         this.mainView.draw();
         stop(null);
     }
@@ -63,6 +105,13 @@ public class ToolBar extends javafx.scene.control.ToolBar {
     private void size(ActionEvent actionEvent) {
         ModalView modalView = new ModalView();
         modalView.openModalWindow(this.mainView);
+        stop(null);
+    }
+
+
+    private void choose(ActionEvent actionEvent) {
+        ChooseView chooseView = new ChooseView();
+        chooseView.openChooseWindow(this.mainView);
         stop(null);
     }
 

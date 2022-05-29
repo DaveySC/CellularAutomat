@@ -11,7 +11,7 @@ public class App extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
         MainView mainView = new MainView();
-        Scene scene = new Scene(mainView, 600,500);
+        Scene scene = new Scene(mainView, 800,800);
         primaryStage.setScene(scene);
         primaryStage.show();
 

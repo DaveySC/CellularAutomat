@@ -173,4 +173,7 @@ public class Simulation1D {
         this.board[y][x] = 0;
     }
 
+    public void setCurrentLine(int currentLine) {
+        this.currentLine = currentLine;
+    }
 }

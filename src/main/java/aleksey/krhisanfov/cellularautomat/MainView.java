@@ -12,15 +12,24 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Affine;
 
-public class MainView extends VBox {
 
+enum SimulationType {
+    D1,
+    COLORED,
+    D2
+}
+
+public class MainView extends VBox {
+    private SimulationType simulationType;
     private InfoBar infoBar;
     private Canvas canvas;
     private Affine affine;
     private int width = 10;
     private int height = 10;
 
-    Simulation1D simulation1D;
+    public Simulation1D simulation1D;
+    Simulation2D simulation2D;
+
 
     private int drawMode = 1;
 
@@ -30,8 +39,10 @@ public class MainView extends VBox {
         this.affine = new Affine();
         affine.appendScale(400 / (double)width, 400 / (double)height);
         this.simulation1D = new Simulation1D(width, height);
-        this.simulation1D.setRule(161);
-        ToolBar toolBar = new ToolBar(this);
+        this.simulation2D = null;
+        this.simulationType = SimulationType.D1;
+        this.simulation1D.setRule(25);
+        ToolBar toolBar = new ToolBar(this); // новый тулбар для каждой симуляции
         Pane spacer = new Pane();
         spacer.setMinSize(0,0);
         spacer.setMaxSize(Double.MAX_VALUE,Double.MAX_VALUE);
@@ -52,7 +63,7 @@ public class MainView extends VBox {
 
     private void resizeCanvas(Observable observable) {
         double widthHBox = this.getWidth();
-        double heightHBox = this.getHeight() * 0.928;
+        double heightHBox = this.getHeight() * 0.956;
 
         this.canvas.setWidth(widthHBox);
         this.canvas.setHeight(heightHBox);
@@ -102,7 +113,13 @@ public class MainView extends VBox {
 
             System.out.println(simX + " " + simY);
 
-            this.simulation1D.setState(simY, simX, drawMode);
+            if (this.simulation1D != null) {
+                this.simulation1D.setState(simY, simX, drawMode);
+            }
+
+            if (this.simulation2D != null) {
+                this.simulation2D.setState(simY, simX, drawMode);
+            }
 
             draw();
 
@@ -122,26 +139,40 @@ public class MainView extends VBox {
 
         graphicsContext.setFill(Color.BLACK);
 
-        for (int y = 0; y < this.simulation1D.getHeight(); y++) {
-            for (int x = 0; x < this.simulation1D.getWidth(); x++) {
-                /*
-                if (this.simulation1D.getState(y,x) == 1) {
-                    graphicsContext.fillRect(x,y,1,1);
-                }
-                */
+        int maxY = 0, maxX = 0;
+        if (this.simulation2D != null) {
+            maxY = this.simulation2D.getHeight();
+            maxX = this.simulation2D.getWidth();
+        }
 
-                if (this.simulation1D.isAlive(y,x) == 1) {
+
+        if (this.simulation1D != null) {
+            maxY = this.simulation1D.getHeight();
+            maxX = this.simulation1D.getWidth();
+        }
+
+
+        for (int y = 0; y < maxY; y++) {
+            for (int x = 0; x < maxX; x++) {
+                if (this.simulation2D != null && this.simulation2D.getState(y,x) == 1) {
                     graphicsContext.fillRect(x,y,1,1);
                 }
+
+                if (this.simulation1D != null && this.simulation1D.isAlive(y,x) == 1) {
+                    graphicsContext.fillRect(x,y,1,1);
+                }
+
+                //colored simulation
             }
         }
         graphicsContext.setStroke(Color.GREY);
         graphicsContext.setLineWidth(0.05);
-        int tester = this.simulation1D.getHeight();
-        for (int y = 0; y <= this.simulation1D.getHeight(); y++) {
+
+
+        for (int y = 0; y <= maxY; y++) {
             graphicsContext.strokeLine(0, y, width, y);
         }
-        for (int x = 0; x <= this.simulation1D.getWidth(); x++) {
+        for (int x = 0; x <= maxX; x++) {
             graphicsContext.strokeLine(x,0, x, height);
         }
     }
@@ -149,8 +180,16 @@ public class MainView extends VBox {
     AnimationTimer animationTimer = new AnimationTimer() {
         @Override
         public void handle(long l) {
-            simulation1D.step();
-            draw();
+           if (simulation1D != null) {
+               simulation1D.step();
+               draw();
+           }
+
+           if (simulation2D != null) {
+               simulation2D.step();
+               draw();
+           }
+
         }
     };
 
@@ -160,6 +199,36 @@ public class MainView extends VBox {
 
     public void stopSimulation() {
         animationTimer.stop();
+    }
+
+
+    public void setSimulationType(SimulationType simulationType) {
+        this.simulationType = simulationType;
+
+        if (simulationType == SimulationType.D1) {
+
+            this.simulation2D = null;
+            this.simulation1D = new Simulation1D(width, height);
+            return;
+        }
+
+        if (simulationType == SimulationType.D2) {
+            this.simulation1D = null;
+            this.simulation2D = new Simulation2D(width, height);
+
+        }
+    }
+
+    public SimulationType getSimulationType() {
+        return simulationType;
+    }
+
+    public Simulation1D get1D() {
+        return this.simulation1D;
+    }
+
+    public Simulation2D get2D() {
+        return this.simulation2D;
     }
 
 }
